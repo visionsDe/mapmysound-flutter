@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "807651341184",
+    "project_id": "mapmysound-20b96",
+    "storage_bucket": "mapmysound-20b96.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807651341184:android:0e0d8b80931305c44f0765",
+        "android_client_info": {
+          "package_name": "com.example.maymysound"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC10B7OG5repHVPmXAR9PDNljJVqR47AZI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
