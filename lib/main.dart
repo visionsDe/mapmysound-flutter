@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:maymysound/dashboard/recorder/view/RecorderView.dart';
 import 'package:maymysound/utils/appFonts.dart';
 import 'package:maymysound/utils/network/networkServices.dart';
 
@@ -8,6 +9,7 @@ import 'package:provider/provider.dart';
 
 import 'appProviders.dart';
 import 'dashboard/sample/view/sampleApiView.dart';
+import 'dashboard/sample/view/sampleStaticView.dart';
 
  main() async {
    WidgetsFlutterBinding.ensureInitialized();
@@ -59,8 +61,8 @@ class MyApp extends StatelessWidget {
         ),
         fontFamily: AppFonts.outfit,
       ),
-     // home: SampleStaticView(),
-      home: SampleApiView(),
+      home: RecorderView(),
+     // home: SampleApiView(),
     );
   }
 }

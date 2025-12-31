@@ -6,7 +6,6 @@ import 'package:maymysound/utils/appColors.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:record/record.dart';
-import '../../../utils/trachThumb.dart';
 import '../viewmodel/RecorderViewModel.dart';
 
 class RecorderView extends StatelessWidget {
@@ -99,6 +98,12 @@ class RecorderView extends StatelessWidget {
                             final double start = vm.start / vm.durationRange;
                             final double end = vm.end / vm.durationRange;
 
+                            /// slider range picker icon
+                            final startRatio = vm.start / vm.durationRange;
+                            final endRatio = vm.end / vm.durationRange;
+
+                            final startX = constraints.maxWidth * startRatio;
+                            final endX = constraints.maxWidth * endRatio;
                             return Stack(
                               children: [
                                 /// SVG with range-based color
@@ -128,19 +133,30 @@ class RecorderView extends StatelessWidget {
 
                                 /// Range Slider
                                 Positioned.fill(
-                                  child:
-                                  SliderTheme(
-                                    data:
-                                    SliderTheme.of(context).copyWith(
+                                  child: SliderTheme(
+                                    data: SliderTheme.of(context).copyWith(
+                                     //  trackHeight: 0,
+                                     // // rangeTrackShape: GappedRangeSliderTrackShape(),
+                                     //
+                                     //  rangeTrackShape: const RectangularRangeSliderTrackShape(),
+                                     //  // overlayShape:
+                                     //  //     SliderComponentShape.noOverlay,
                                       trackHeight: 0,
-                                       rangeTrackShape: GappedRangeSliderTrackShape(),
-                                   //   rangeTrackShape: const RectangularRangeSliderTrackShape(),
-                                      mouseCursor: MaterialStateProperty.all(
-                                        SystemMouseCursors.alias,
+
+                                      /// Hide track completely
+                                      activeTrackColor: Colors.transparent,
+                                      inactiveTrackColor: Colors.transparent,
+
+                                      /// Hide thumbs
+                                      rangeThumbShape: const RoundRangeSliderThumbShape(
+                                        enabledThumbRadius: 0,
                                       ),
 
-                                      overlayShape:
-                                          SliderComponentShape.noOverlay,
+                                      /// Hide overlay ripple
+                                      overlayShape: SliderComponentShape.noOverlay,
+
+                                      /// Keep default logic but invisible
+                                      rangeTrackShape: const RectangularRangeSliderTrackShape(),
                                     ),
                                     child: RangeSlider(
                                       values: RangeValues(
@@ -153,8 +169,8 @@ class RecorderView extends StatelessWidget {
                                       ),
                                       min: 0,
                                       max: vm.durationRange,
-                                      activeColor: AppColors.primary,
-                                      inactiveColor: AppColors.transparent,
+                                      // activeColor: AppColors.transparent,
+                                      // inactiveColor: AppColors.transparent,
                                       onChanged: (values) {
                                         vm.updateStartEnd(
                                           start: values.start,
@@ -164,12 +180,31 @@ class RecorderView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                                Positioned(
+                                  left: startX,
+                                  top: 16,
+                                  child: const ArrowHandle(
+                                    isLeft: true,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+
+                                /// RIGHT ARROW
+                                Positioned(
+                                  left: endX,
+                                  top: 16,
+                                  child: const ArrowHandle(
+                                    isLeft: false,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
                               ],
                             );
                           },
                         ),
                       ),
                     ),
+
                   if (vm.durationRange != 0.0)
                     TextButton(
                       onPressed: () {
@@ -317,3 +352,102 @@ class RecorderView extends StatelessWidget {
     );
   }
 }
+
+class ArrowHandle extends StatelessWidget {
+  final bool isLeft;
+  final Color color;
+
+  /// Optional content
+  final IconData? icon;
+  final String? text;
+  final Widget? child;
+
+  const ArrowHandle({
+    super.key,
+    required this.isLeft,
+    required this.color,
+    this.icon,
+    this.text,
+    this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 32,
+      height: 56,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            child: isLeft
+                ? SizedBox(
+                    height: 100,
+                    width: 20,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          height: 80,
+                          width: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                        Container(
+                          height: 22,
+                          width: 22,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.green,
+                          ),
+                          alignment: Alignment.center, // IMPORTANT
+                          child: const Icon(
+                            Icons.chevron_left,
+                            size: 18,               // CONTROL size
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : SizedBox(
+              height: 100,
+              width: 20,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    height: 80,
+                    width: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  Container(
+                    height: 22,
+                    width: 22,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.red,
+                    ),
+                    alignment: Alignment.center, // IMPORTANT
+                    child: const Icon(
+                      Icons.chevron_right,
+                      size: 18,               // CONTROL size
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+}
+
