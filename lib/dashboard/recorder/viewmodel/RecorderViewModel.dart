@@ -46,6 +46,8 @@ class RecorderViewModel extends ChangeNotifier {
 
   /// For generate waveform image
   String? waveAudioPath;
+  String? spectrogramAudioPath;
+
 
   RecorderViewModel() {
     _init();
@@ -111,11 +113,8 @@ class RecorderViewModel extends ChangeNotifier {
 
    await getAudioDuration(recordedFilePath!);
     notifyListeners();
-
-
     print("recordedFilePath1Dub ${recordedFilePath1Dub}");
     print("recordedFilePath2Dub ${recordedFilePath2Dub}");
-
     notifyListeners();
     debugPrint("Saved at: $path");
   }
@@ -376,10 +375,10 @@ class RecorderViewModel extends ChangeNotifier {
 
     print("SELECTED RANGE START END $startMs , $endMs");
 
-    // 1️⃣ Stop anything playing
+    //  Stop anything playing
     await _player.stop();
 
-    // 2️⃣ Load & start playing (required before seek)
+    // Load & start playing (required before seek)
     await _player.play(
       DeviceFileSource(recordedFilePath!),
       position: Duration(milliseconds: startMs), // 👈 BEST WAY
@@ -407,16 +406,16 @@ class RecorderViewModel extends ChangeNotifier {
         '${docsDir.path}/waveform_${DateTime.now().millisecondsSinceEpoch}.png';
 
     // FFmpeg command to generate waveform image
-    final commandWORKING =
-        '-y -i "$audioPath" -filter_complex "aformat=channel_layouts=mono,showwavespic=s=640x120" "$outputPath"';
+    // final commandWORKING =
+    //     '-y -i "$audioPath" -filter_complex "aformat=channel_layouts=mono,showwavespic=s=640x120" "$outputPath"';
     final commandN =
         '-y -i "$audioPath" '
         '-filter_complex "aformat=channel_layouts=mono,showwavespic=s=800x200:scale=lin" '
         '"$outputPath"';
-    final command =
-        '-y -i "input.m4a" '
-        '-filter_complex "volume=6dB,aformat=channel_layouts=mono,showwavespic=s=400x400:drawstyle=bars:scale=lin" '
-        '"waveform.png"';
+    // final command =
+    //     '-y -i "input.m4a" '
+    //     '-filter_complex "volume=6dB,aformat=channel_layouts=mono,showwavespic=s=400x400:drawstyle=bars:scale=lin" '
+    //     '"waveform.png"';
 
 
     final session = await FFmpegKit.execute(commandN);
@@ -435,6 +434,69 @@ class RecorderViewModel extends ChangeNotifier {
       return null;
     }
   }
+
+  Future<String?> generateSpectrogram(String audioPath) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final outputPath =
+        '${dir.path}/spectrogram_${DateTime.now().millisecondsSinceEpoch}.png';
+
+    final commandNewOne =
+        '-y -i "$audioPath" '
+        '-lavfi showspectrumpic=s=800x400 '
+        '"$outputPath"';
+
+
+    final commandOkWithBlack =
+        '-y -i "$audioPath" '
+        '-lavfi showspectrumpic=s=800x400 '
+        '"$outputPath"';
+
+    final commandWithBlackNew =
+        '-y -i "$audioPath" '
+        '-lavfi showspectrumpic=s=800x400:legend=disabled '
+        '"$outputPath"';
+
+    // final command =
+    //     '-y -i "$audioPath" '
+    //     '-lavfi '
+    //     '"showspectrumpic='
+    //     's=800x400:'
+    //     'legend=disabled:'
+    //     'color=rainbow,'
+    //     'format=rgba" '
+    //     '"$outputPath"';
+
+    final commandWithoutBackground =
+        '-y -i "$audioPath" '
+        '-lavfi '
+        '"showspectrumpic=s=800x400:legend=disabled,format=rgba" '
+        '"$outputPath"';
+
+
+    final command =
+        '-y -i "$audioPath" '
+        '-lavfi "'
+        'showspectrumpic=s=800x400:legend=disabled,'
+        'format=rgba,'
+        "drawtext=text='Time (s)':x=(w/2)-40:y=h-20:fontsize=16:fontcolor=white,"
+        "drawtext=text='Frequency (Hz)':x=10:y=10:fontsize=16:fontcolor=white"
+        '" '
+        '"$outputPath"';
+
+    final session = await FFmpegKit.execute(commandNewOne);
+    final rc = await session.getReturnCode();
+
+    if (rc?.isValueSuccess() == true) {
+      debugPrint('Spectrogram generated at $outputPath');
+      spectrogramAudioPath = outputPath;
+      notifyListeners();
+      return outputPath;
+    } else {
+      debugPrint(await session.getAllLogsAsString());
+      return null;
+    }
+  }
+
 
 
 

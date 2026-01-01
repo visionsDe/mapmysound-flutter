@@ -1,3 +1,4 @@
+import 'package:maymysound/login/viewModel/loginViewModel.dart';
 import 'package:maymysound/splashScreen/viewModel/splashViewModel.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -10,5 +11,6 @@ class AppProviders {
     ChangeNotifierProvider(create: (_) => SampleApiViewModel()),
     ChangeNotifierProvider(create: (_) => RecorderViewModel()),
     ChangeNotifierProvider(create: (_) => SplashViewModel()),
+    ChangeNotifierProvider(create: (_) => LoginViewModel()),
   ];
 }

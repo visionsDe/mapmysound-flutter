@@ -15,52 +15,64 @@ class SampleApiView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text(AppString.sampleMVVMApi, style: AppTextStyles.semibold18),
-      ),
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: ChangeNotifierProvider(
-            create: (BuildContext context) {
-              final vm = SampleApiViewModel();
-              //vm.getSampleApiData();
-              return vm;
-            },
-            child: Consumer<SampleApiViewModel>(
-              builder: (context, viewmodel, child) {
-                if(!viewmodel.hasInternet){
-                  return Center(
-                    child: Text("No Internet Connection"),
-                  );
-                }
-                if (viewmodel.loader) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                List<ModelSampleApi> data = viewmodel.list;
-                if (data.isEmpty) {
-                  return Text(
-                    "No Data Available",
-                    style: AppTextStyles.light14,
-                  );
-                } else {
-                  // return Constant.btnLinearGradient(name: "Signup",onTap: (){
-                  //   print("Signup btn click");
-                  // });
-                   return contentView(data, viewmodel);
-                }
-              },
+    return ChangeNotifierProvider(
+      create: (BuildContext context) {
+        final vm = SampleApiViewModel();
+        //vm.getSampleApiData();
+        return vm;
+      },
+      child: Consumer<SampleApiViewModel>(
+        builder: (context, viewmodel, child) {
+          return Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: Text(
+                AppString.sampleMVVMApi,
+                style: AppTextStyles.semibold18,
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    viewmodel.uploadImage();
+                  },
+                  child: Text("Multi"),
+                ),
+              ],
             ),
-          ),
-        ),
+            backgroundColor: AppColors.white,
+            body: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                child:buildBody(viewmodel),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget contentView(List<ModelSampleApi> data ,SampleApiViewModel vm) {
+
+  Widget buildBody(SampleApiViewModel vm) {
+    if (!vm.hasInternet) {
+      return const Center(child: Text("No Internet Connection"));
+    }
+
+    if (vm.loader) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (vm.list.isEmpty) {
+      return Text(
+        "No Data Available",
+        style: AppTextStyles.light14,
+      );
+    }
+
+    return contentView(vm.list, vm);
+  }
+
+  Widget contentView(List<ModelSampleApi> data, SampleApiViewModel vm) {
     return ListView.separated(
       separatorBuilder: (BuildContext context, int index) {
         return Padding(padding: EdgeInsets.symmetric(vertical: 10));
@@ -89,11 +101,12 @@ class SampleApiView extends StatelessWidget {
           ),
           subtitle: Text(itemData.ceoName.toString()),
           leading: InkWell(
-            onTap: (){
+            onTap: () {
               vm.startRecording();
             },
 
-              child: SvgPicture.asset("assets/images/dummy.svg")),
+            child: SvgPicture.asset("assets/images/dummy.svg"),
+          ),
           trailing: Text(itemData.employeeCount.toString()),
         );
       },

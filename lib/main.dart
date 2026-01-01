@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'appProviders.dart';
 import 'dashboard/sample/view/sampleApiView.dart';
 import 'dashboard/sample/view/sampleStaticView.dart';
+import 'login/view/loginView.dart';
 
  main() async {
    WidgetsFlutterBinding.ensureInitialized();
@@ -62,7 +63,7 @@ class MyApp extends StatelessWidget {
         fontFamily: AppFonts.outfit,
       ),
       home: RecorderView(),
-     // home: SampleApiView(),
+      // home: SampleApiView(),
     );
   }
 }

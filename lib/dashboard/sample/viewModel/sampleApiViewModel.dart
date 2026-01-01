@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:maymysound/dashboard/sample/view/sampleApiViewObject.dart';
@@ -80,7 +81,33 @@ class SampleApiViewModel extends ChangeNotifier{
     }
     loader = false;
   }
+ //
 
+  bool isLoading = false;
+  Map<String, dynamic>? response;
+
+  Future<void> uploadImage() async {
+    final String imagePath =
+        '/var/mobile/Containers/Data/Application/8EFD6ADD-D5EA-4566-9861-E17E0B84DA74/Documents/spectrogram_1767247148218.png';
+
+    final File imageFile = File(imagePath);
+    print("FILNE $imageFile");
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      response = await _repo.uploadImage(
+        image: imageFile,
+        name: 'Mohit',
+        phone: '9874561230',
+      );
+    } catch (e) {
+      debugPrint("Upload Error: $e");
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
 
 
   Future<void> setStaticData()async {
